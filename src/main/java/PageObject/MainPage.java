@@ -1,9 +1,6 @@
 package PageObject;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -13,19 +10,6 @@ import java.util.List;
 public class MainPage {
     private final WebDriver driver;
 
-    // массив ответов
-
-    private final String[] answers = {
-            "Сутки — 400 рублей. Оплата курьеру — наличными или картой.",
-            "Пока что у нас так: один заказ — один самокат. Если хотите покататься с друзьями, можете просто сделать несколько заказов — один за другим.",
-            "Допустим, вы оформляете заказ на 8 мая. Мы привозим самокат 8 мая в течение дня. Отсчёт времени аренды начинается с момента, когда вы оплатите заказ курьеру. Если мы привезли самокат 8 мая в 20:30, суточная аренда закончится 9 мая в 20:30.",
-            "Только начиная с завтрашнего дня. Но скоро станем расторопнее.",
-            "Пока что нет! Но если что-то срочное — всегда можно позвонить в поддержку по красивому номеру 1010.",
-            "Самокат приезжает к вам с полной зарядкой. Этого хватает на восемь суток — даже если будете кататься без передышек и во сне. Зарядка не понадобится.",
-            "Да, пока самокат не привезли. Штрафа не будет, объяснительной записки тоже не попросим. Все же свои.",
-            "Да, обязательно. Всем самокатов! И Москве, и Московской области."
-
-    };
 
     // список вопросов о важном
     private final By accordionItems = By.className("accordion__item");
@@ -46,23 +30,28 @@ public class MainPage {
         this.driver = driver;
     }
 
-public void compareFAQ() throws InterruptedException {
-    List<WebElement> elements = driver.findElements(accordionItems);
+    public void checkFAQquestion(Integer index, String question, String answer) throws InterruptedException {
 
-    //assert ((int) elements.size(), (int) answers.length);
+        String xpath = String.format(".//div[@id = 'accordion__heading-%d']", index);
+        By questionItem = By.xpath(xpath);
+        new WebDriverWait(driver, Duration.ofSeconds(1))
+                .until(ExpectedConditions.textToBePresentInElementLocated(questionItem, question));
 
-    for(int i = 0; i < elements.size(); i++ ) {
-        WebElement currentElement = elements.get(i);
+
+        List<WebElement> elements = driver.findElements(accordionItems);
+        WebElement currentElement = elements.get(index);
         ((JavascriptExecutor)driver).executeScript("arguments[0].scrollIntoView();", currentElement);
+
+        new WebDriverWait(driver, Duration.ofSeconds(1))
+                .until(ExpectedConditions.elementToBeClickable(currentElement));
+
         currentElement.click();
+
 
         // ожидание
         new WebDriverWait(driver, Duration.ofSeconds(1))
-                .until(ExpectedConditions.textToBePresentInElementLocated(By.xpath(".//div[@class = 'accordion__panel' and not(@hidden) ]//p"), answers[i]));
-
+                .until(ExpectedConditions.textToBePresentInElementLocated(By.xpath(".//div[@class = 'accordion__panel' and not(@hidden) ]//p"), answer));
 
     }
-
-}
 
 }

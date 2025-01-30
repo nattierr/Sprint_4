@@ -108,7 +108,6 @@ public OrderTest(Boolean useHeaderOrderButton, String username, String userSurna
             //Нажать на кнопку посмотреть статус
             orderResultPage.clickShowStatusButton();
 
-            Thread.sleep(5000);
         }
 
         @After
